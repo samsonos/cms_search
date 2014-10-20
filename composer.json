@@ -2,7 +2,9 @@
     "name":"samsonos/cms_search",
     "author":"Pavlo Onysko <onysko@samsonos.com>",
     "require":{
-        "samsonos/php_core": "*"
+        "samsonos/php_core": "*",
+		"samsonos/cms_api": "*",
+		"samsonos/php_pager": "*"
     },
     "license":"Open Software License (OSL) v 3.0",
     "homepage":"http://samsonphp.com/",
