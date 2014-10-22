@@ -16,6 +16,8 @@ In CMSSearch constructor you must define at least 2 first parameters
 
 For example if you want to find some materials with key 'first' and create search in fields with identifiers 5, 2 and 7, you can use follow code
 
+PHP code:
+
 ```php
 // Define fields array
 $fields = array(5, 2, 7);
@@ -37,9 +39,11 @@ $searchBlock = m()->view('search/items')
 
 Thanks to CMSSearch module you can create a simple preview using your own async controller that must be defined in attribute 'preview-action' of search input.
 For using that you need add class 'samson_CMS_searchInput' to your search input.
-If you want to show loader while you are waiting to ajax response, you can add block with class samson_CMS_searchLoader to your html code.
+If you want to show loader while you are waiting for ajax response, you can add block with class samson_CMS_searchLoader to your html code.
 
 ## Preview Example
+
+HTML code:
 
 ```html
 <form action="<?php url_base('search') ?>"  method="get">
@@ -70,6 +74,8 @@ If you want to show loader while you are waiting to ajax response, you can add b
 </form>
 ```
 
+LESS code:
+
 ```less
 .samson_CMS_searchPreview {
   position: absolute;
@@ -95,6 +101,8 @@ If you want to show loader while you are waiting to ajax response, you can add b
   }
 }
 ```
+
+PHP code:
 
 ```php
 /**
