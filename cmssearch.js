@@ -11,44 +11,64 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
 
     var name = search.a('name');
 
-    search.keyup(function(search) {
-        // Send only one AJAX request
-        if (timeOutProgress == 0) {
-            timeOutProgress = 1;
+    var codeArray = [
+        113, 114, 115, 116, 118, 120, 16, 17, 18, 91, 20, 37, 38, 39, 40, 27, 44, 33, 34, 35, 36, 45, 46, 13, 144, 8
+    ];
 
-            // Build request URL
-            var searchAction = search.a('preview-action') + '?' + name + '=' + search.val();
+    search.keyup(function(search, params, e) {
+        s.trace(e.keyCode);
+        if (codeArray.indexOf(e.keyCode) == -1) {
+            // Send only one AJAX request
+            if (timeOutProgress == 0) {
+                timeOutProgress = 1;
 
-            // Set 1 second timeout
-            var searchTimeOut = setTimeout(function() {
-                if (__SansonCMS_searchLoader.length) {
-                    __SansonCMS_searchLoader.show();
-                }
+                // Build request URL
+                var searchAction = search.a('preview-action') + '?' + name + '=' + search.val();
 
-                // If value is not empty - find
-                if (search.val() != '') {
-                    // Send request
-                    s.ajax(searchAction, function(response){
-                        // Parse AJAX response
-                        response = JSON.parse(response);
+                // Set 1 second timeout
+                var searchTimeOut = setTimeout(function() {
+                    if (__SansonCMS_searchLoader.length) {
+                        __SansonCMS_searchLoader.show();
+                    }
 
-                        // Show preview block only we we have some found
-                        if (response.html != '') {
-                            s('.samson_CMS_searchPreview').show();
-                        } else {
-                            s('.samson_CMS_searchPreview').hide();
-                        }
+                    // If value is not empty - find
+                    if (search.val() != '') {
+                        // Send request
+                        s.ajax(searchAction, function(response){
+                            // Parse AJAX response
+                            response = JSON.parse(response);
 
-                        // Show founded items
-                        s('.samson_CMS_searchPreviewItems').html(response.html);
-                        timeOutProgress = 0;
+                            // Show preview block only we we have some found
+                            if (response.html != '') {
+                                s('.samson_CMS_searchPreview').show();
+                            } else {
+                                s('.samson_CMS_searchPreview').hide();
+                            }
 
-                        if (__SansonCMS_searchLoader.length) {
-                            __SansonCMS_searchLoader.hide();
-                        }
-                    });
-                }
-            }, 1500);
+                            // Show founded items
+                            s('.samson_CMS_searchPreviewItems').html(response.html);
+                            timeOutProgress = 0;
+
+                            if (__SansonCMS_searchLoader.length) {
+                                __SansonCMS_searchLoader.hide();
+                            }
+                        });
+                    }
+                }, 1500);
+            }
+        }
+    });
+
+    s('html').click(function( obj, opt, e )
+    {
+        var clickedElement = s(e.srcElement||e.originalTarget);
+
+        if (clickedElement != undefined
+                && !clickedElement.hasClass('samson_CMS_searchPreview')
+                && !clickedElement.hasClass('yasearch samson_CSM_searchBlock')
+                && !clickedElement.hasClass('samson_CMS_searchPreviewItems')
+                && !clickedElement.hasClass('search_preview_item')) {
+            s('.samson_CMS_searchPreview').hide();
         }
     });
 });
