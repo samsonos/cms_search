@@ -74,7 +74,7 @@ function parentPrepare(search) {
 
     // Add loader into parent block
     if (__SansonCMS_searchLoader.length) {
-        searchPreview.append(__SansonCMS_searchLoader);
+        parent.append(__SansonCMS_searchLoader);
     }
 
     // Add created blocks into parent

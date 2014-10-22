@@ -77,6 +77,15 @@ HTML code:
 LESS code:
 
 ```less
+.samson_CMS_searchLoader {
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    text-align: center;
+    background-color: rgba(0,0,0,0.45);
+    position: absolute;
+}
 .samson_CMS_searchPreview {
   position: absolute;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
@@ -86,15 +95,6 @@ LESS code:
   height: 300px;
   background: #ffffff;
   z-index: 90;
-  .samson_CMS_searchLoader {
-    top: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    text-align: center;
-    background-color: rgba(0,0,0,0.45);
-    position: absolute;
-  }
 
   .samson_CMS_searchPreviewItems {
     margin: 15px;
