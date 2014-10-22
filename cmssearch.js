@@ -25,27 +25,30 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
                     __SansonCMS_searchLoader.show();
                 }
 
-                // Send request
-                s.ajax(searchAction, function(response){
-                    // Parse AJAX response
-                    response = JSON.parse(response);
+                // If value is not empty - find
+                if (search.val() != '') {
+                    // Send request
+                    s.ajax(searchAction, function(response){
+                        // Parse AJAX response
+                        response = JSON.parse(response);
 
-                    // Show preview block only we we have some found
-                    if (response.html != '') {
-                        s('.samson_CMS_searchPreview').show();
-                    } else {
-                        s('.samson_CMS_searchPreview').hide();
-                    }
+                        // Show preview block only we we have some found
+                        if (response.html != '') {
+                            s('.samson_CMS_searchPreview').show();
+                        } else {
+                            s('.samson_CMS_searchPreview').hide();
+                        }
 
-                    // Show founded items
-                    s('.samson_CMS_searchPreviewItems').html(response.html);
-                    timeOutProgress = 0;
+                        // Show founded items
+                        s('.samson_CMS_searchPreviewItems').html(response.html);
+                        timeOutProgress = 0;
 
-                    if (__SansonCMS_searchLoader.length) {
-                        __SansonCMS_searchLoader.hide();
-                    }
-                });
-            }, 1000);
+                        if (__SansonCMS_searchLoader.length) {
+                            __SansonCMS_searchLoader.hide();
+                        }
+                    });
+                }
+            }, 1500);
         }
     });
 });
