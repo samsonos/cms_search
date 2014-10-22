@@ -32,3 +32,98 @@ $searchBlock = m()->view('search/items')
 	->searchItems($materialHTML)
 	->output();
 ```
+
+## Crete simple preview of founded items
+
+Thanks to CMSSearch module you can create a simple preview using your own async controller that must be defined in attribute 'preview-action' of search input.
+For using that you need add class 'samson_CMS_searchInput' to your search input.
+If you want to show loader while you are waiting to ajax response, you can add block with class samson_CMS_searchLoader to your html code.
+
+## Preview Example
+
+```html
+<form action="<?php url_base('search') ?>"  method="get">
+    <input class="samson_CMS_searchInput" preview-action="<?php url_base('search/preview') ?>" type="text" name="key" placeholder="Search some here">
+
+    <div class="samson_CMS_searchLoader" style="display: none">
+        <div id="searchLoader">
+            <div class="f_circleG" id="frotateG_01">
+            </div>
+            <div class="f_circleG" id="frotateG_02">
+            </div>
+            <div class="f_circleG" id="frotateG_03">
+            </div>
+            <div class="f_circleG" id="frotateG_04">
+            </div>
+            <div class="f_circleG" id="frotateG_05">
+            </div>
+            <div class="f_circleG" id="frotateG_06">
+            </div>
+            <div class="f_circleG" id="frotateG_07">
+            </div>
+            <div class="f_circleG" id="frotateG_08">
+            </div>
+        </div>
+    </div>
+
+    <button type="submit">Search</button>
+</form>
+```
+
+```less
+.samson_CMS_searchPreview {
+  position: absolute;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  width: 100%;
+  top: 40px;
+  border-radius: 5px;
+  height: 300px;
+  background: #ffffff;
+  z-index: 90;
+  .samson_CMS_searchLoader {
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    text-align: center;
+    background-color: rgba(0,0,0,0.45);
+    position: absolute;
+  }
+
+  .samson_CMS_searchPreviewItems {
+    margin: 15px;
+  }
+}
+```
+
+```php
+/**
+* Async controller for rendering search preview
+*/
+function search_async_preview()
+{
+    $search = new \samsonos\cms\search\CMSSearch($_GET['key'], array(85, 49), array(), 5, 'search', 'searchExternalHandler');
+
+    $response = array('status' => 1);
+
+    $itemView = '';
+
+    foreach ($search->searchMaterials() as $item) {
+        $itemView .= m()->view('search/preview_item')->item($item)->output();
+    }
+
+    $response['html'] = $itemView;
+
+    return $response;
+}
+
+/**
+* Search external handler for modifying query
+*/
+function searchExternalHandler(& $query)
+{
+    $query = $query[0];
+
+    $query->cond('material.MyField', 1);
+}
+```
