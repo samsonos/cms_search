@@ -98,7 +98,7 @@ class CMSSearch {
         $materialsCount = clone $materialIds;
 
         // Create pager
-        $this->pager = new \samson\pager\Pager($page, 8, 'search', null, $this->getParams);
+        $this->pager = new \samson\pager\Pager($page, $this->itemsOnPage, $this->pagerPrefix, null, $this->getParams);
         $this->pager->update($materialsCount->count());
         $materialIds->limit($this->pager->start, $this->pager->end);
 
