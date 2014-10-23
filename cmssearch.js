@@ -12,7 +12,7 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
     var name = search.a('name');
 
     var codeArray = [
-        113, 114, 115, 116, 118, 120, 16, 17, 18, 91, 20, 37, 38, 39, 40, 27, 44, 33, 34, 35, 36, 45, 46, 13, 144, 8
+        113, 114, 115, 116, 118, 120, 16, 17, 18, 91, 20, 37, 38, 39, 40, 27, 44, 33, 34, 35, 36, 45, 46, 13, 144
     ];
 
     search.keyup(function(search, params, e) {
