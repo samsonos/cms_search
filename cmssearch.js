@@ -16,23 +16,20 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
     ];
 
     search.keyup(function(search, params, e) {
-        s.trace(e.keyCode);
         if (codeArray.indexOf(e.keyCode) == -1) {
             // Send only one AJAX request
             if (timeOutProgress == 0) {
                 timeOutProgress = 1;
 
-                // Build request URL
-                var searchAction = search.a('preview-action') + '?' + name + '=' + search.val();
-
                 // Set 1 second timeout
                 var searchTimeOut = setTimeout(function() {
-                    if (__SansonCMS_searchLoader.length) {
-                        __SansonCMS_searchLoader.show();
-                    }
-
                     // If value is not empty - find
-                    if (search.val() != '') {
+                    if (search.val().length >= 3 ) {
+                        if (__SansonCMS_searchLoader.length) {
+                            __SansonCMS_searchLoader.show();
+                        }
+                        // Build request URL
+                        var searchAction = search.a('preview-action') + '?' + name + '=' + search.val();
                         // Send request
                         s.ajax(searchAction, function(response){
                             // Parse AJAX response
@@ -47,13 +44,14 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
 
                             // Show founded items
                             s('.samson_CMS_searchPreviewItems').html(response.html);
-                            timeOutProgress = 0;
 
                             if (__SansonCMS_searchLoader.length) {
                                 __SansonCMS_searchLoader.hide();
                             }
+                            s.trace(search.val());
                         });
                     }
+                    timeOutProgress = 0;
                 }, 1500);
             }
         }
