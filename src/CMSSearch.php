@@ -22,11 +22,14 @@ class CMSSearch {
     /** @var  \samson\pager\Pager */
     public $pager;
 
-    /** @var array Utr get parameters */
+    /** @var array Url get parameters */
     public $getParams = array();
 
-    /** @var callable|null External query handler */
-    public $externalHandler = null;
+    /** @var callable|null External materialfield query handler */
+    public $MatFieldExternalHandler = null;
+
+    /** @var callable|null External material query handler */
+    public $MaterialExternalHandler = null;
 
     /** @var int Count of items for pager */
     public $itemsOnPage = 10;
@@ -47,7 +50,8 @@ class CMSSearch {
                                 array $getParams = array(),
                                 $itemsOnPage = 8,
                                 $pagerPrefix = 'search',
-                                $handler = null)
+                                $matFieldHandler = null,
+                                $materialHandler = null)
     {
         $this->searchFields = $searchFields;
         $this->key = $searchKey;
@@ -55,8 +59,11 @@ class CMSSearch {
         $this->itemsOnPage = $itemsOnPage;
         $this->pagerPrefix = $pagerPrefix;
 
-        if (is_callable($handler)) {
-            $this->externalHandler = $handler;
+        if (is_callable($matFieldHandler)) {
+            $this->MatFieldExternalHandler = $matFieldHandler;
+        }
+        if (is_callable($materialHandler)) {
+            $this->MaterialExternalHandler = $materialHandler;
         }
     }
 
@@ -90,17 +97,9 @@ class CMSSearch {
             ->cond('material.Draft', 0)
             ->group_by('MaterialID');
 
-        if (isset($this->externalHandler)) {
-            call_user_func($this->externalHandler, array(&$materialIds));
+        if (isset($this->MatFieldExternalHandler)) {
+            call_user_func($this->MatFieldExternalHandler, array(&$materialIds));
         }
-
-        // Clone for count query
-        $materialsCount = clone $materialIds;
-
-        // Create pager
-        $this->pager = new \samson\pager\Pager($page, $this->itemsOnPage, $this->pagerPrefix, null, $this->getParams);
-        $this->pager->update($materialsCount->count());
-        $materialIds->limit($this->pager->start, $this->pager->end);
 
         $result = array();
 
@@ -108,11 +107,23 @@ class CMSSearch {
         if ($materialIds->fields('MaterialID', $arrayIds)) {
             $result = dbQuery('\samson\cms\CMSMaterial')
                 ->cond('MaterialID', $arrayIds)
-                ->join('gallery')
-                ->exec();
+                ->join('gallery');
         }
 
+        // Call user handler
+        if (isset($this->MaterialExternalHandler)) {
+            call_user_func($this->MaterialExternalHandler, array(&$result));
+        }
+
+        // Clone for count query
+        $materialsCount = clone $result;
+
+        // Create pager
+        $this->pager = new \samson\pager\Pager($page, $this->itemsOnPage, $this->pagerPrefix, null, $this->getParams);
+        $this->pager->update($materialsCount->count());
+        $result->limit($this->pager->start, $this->pager->end);
+
         // Return query result
-        return $result;
+        return $result->exec();
     }
 }
