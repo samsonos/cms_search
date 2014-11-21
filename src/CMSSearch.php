@@ -98,7 +98,7 @@ class CMSSearch {
             ->group_by('MaterialID');
 
         if (isset($this->MatFieldExternalHandler)) {
-            call_user_func($this->MatFieldExternalHandler, array(&$materialIds));
+            call_user_func_array($this->MatFieldExternalHandler, array(&$materialIds));
         }
 
         $result = dbQuery('\samson\cms\CMSMaterial');
