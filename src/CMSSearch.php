@@ -101,18 +101,20 @@ class CMSSearch {
             call_user_func($this->MatFieldExternalHandler, array(&$materialIds));
         }
 
-        $result = array();
+        $result = dbQuery('\samson\cms\CMSMaterial');
 
         // Try to get founded materials
         if ($materialIds->fields('MaterialID', $arrayIds)) {
             $result = dbQuery('\samson\cms\CMSMaterial')
                 ->cond('MaterialID', $arrayIds)
                 ->join('gallery');
+        } else { // Create 100% empty condition
+            $result->cond('MaterialID', 0);
         }
 
         // Call user handler
         if (isset($this->MaterialExternalHandler)) {
-            call_user_func($this->MaterialExternalHandler, array(&$result));
+            call_user_func_array($this->MaterialExternalHandler, array(&$result));
         }
 
         // Clone for count query
