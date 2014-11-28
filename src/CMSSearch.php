@@ -97,14 +97,16 @@ class CMSSearch {
             ->cond('material.Draft', 0)
             ->group_by('MaterialID');
 
+        // Set external query handler
         if (isset($this->MatFieldExternalHandler)) {
-            call_user_func_array($this->MatFieldExternalHandler, array(&$materialIds));
+            $materialIds->handler($this->MatFieldExternalHandler);
         }
 
         $result = dbQuery('\samson\cms\CMSMaterial');
 
         // Try to get founded materials
-        if ($materialIds->fields('MaterialID', $arrayIds)) {
+        $arrayIds = array();
+        if ($materialIds->fieldsNew('MaterialID', $arrayIds)) {
             $result = dbQuery('\samson\cms\CMSMaterial')
                 ->cond('MaterialID', $arrayIds)
                 ->join('gallery');
@@ -112,9 +114,9 @@ class CMSSearch {
             $result->cond('MaterialID', 0);
         }
 
-        // Call user handler
+        // Call external material handler
         if (isset($this->MaterialExternalHandler)) {
-            call_user_func_array($this->MaterialExternalHandler, array(&$result));
+            $result->handler($this->MaterialExternalHandler);
         }
 
         // Clone for count query
