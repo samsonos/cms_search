@@ -37,6 +37,8 @@ class CMSSearch {
     /** @var string Url prefix for pager links */
     public $pagerPrefix = 'search';
 
+    public $structures;
+
     /**
      * @param string $searchKey Value for searching
      * @param array $searchFields Collection of field identifiers for searching
@@ -51,7 +53,8 @@ class CMSSearch {
                                 $itemsOnPage = 8,
                                 $pagerPrefix = 'search',
                                 $matFieldHandler = null,
-                                $materialHandler = null)
+                                $materialHandler = null,
+                                $structures = null)
     {
         $this->searchFields = $searchFields;
         $this->key = $searchKey;
@@ -64,6 +67,10 @@ class CMSSearch {
         }
         if (is_callable($materialHandler)) {
             $this->MaterialExternalHandler = $materialHandler;
+        }
+
+        if (isset($structures)) {
+            $this->structures = is_array($structures) ? $structures : array($structures);
         }
     }
 
@@ -110,6 +117,10 @@ class CMSSearch {
             $result = dbQuery('\samson\cms\CMSMaterial')
                 ->cond('MaterialID', $arrayIds)
                 ->join('gallery');
+
+            if (isset($this->structures)) {
+                $result->join('\samson\cms\CMSNavMaterial')->cond('structurematerial_StructureID', $this->structures);
+            }
         } else { // Create 100% empty condition
             $result->cond('MaterialID', 0);
         }
