@@ -84,9 +84,11 @@ class CMSSearch {
         $words = explode(' ', $this->key);
         // If we have many words in searching value
         if (sizeof($words) > 1) {
+            $conditionAnd = new Condition('AND');
             foreach ($words as $word) {
-                $conditionOR->add('Value', '%'.$word.'%', dbRelation::LIKE);
+                $conditionAnd->add('Value', '%'.$word.'%', dbRelation::LIKE);
             }
+            $conditionOR->add($conditionAnd);
         }
 
         if (is_numeric($this->key)) {
