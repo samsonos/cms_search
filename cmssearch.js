@@ -29,7 +29,7 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
                             __SansonCMS_searchLoader.show();
                         }
                         // Build request URL
-                        var searchAction = search.a('preview-action') + '?' + name + '=' + search.val();
+                        var searchAction = s('.samson_CMS_searchPreviewHidden').a('value') + '?' + name + '=' + search.val();
                         // Send request
                         s.ajax(searchAction, function(response){
                             // Parse AJAX response
@@ -48,7 +48,6 @@ s('.samson_CMS_searchInput').pageInit(function(search) {
                             if (__SansonCMS_searchLoader.length) {
                                 __SansonCMS_searchLoader.hide();
                             }
-                            s.trace(search.val());
                         });
                     }
                     timeOutProgress = 0;

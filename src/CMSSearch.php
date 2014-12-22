@@ -10,6 +10,7 @@ namespace samsonos\cms\search;
 
 use samson\activerecord\Condition;
 use samson\activerecord\dbRelation;
+use samson\core\SamsonLocale;
 
 
 class CMSSearch {
@@ -100,6 +101,7 @@ class CMSSearch {
             ->cond($conditionOR)
             ->cond('FieldID', $this->searchFields)
             ->cond('Active', 1)
+            ->cond('locale', array('', SamsonLocale::current()))
             ->join('material')
             ->cond('material.Active', 1)
             ->cond('material.Published', 1)
@@ -111,36 +113,46 @@ class CMSSearch {
             $materialIds->handler($this->MatFieldExternalHandler);
         }
 
-        $result = dbQuery('\samson\cms\CMSMaterial');
+        $foundedIds = dbQuery('\samson\cms\CMSMaterial');
 
         // Try to get founded materials
         $arrayIds = array();
         if ($materialIds->fieldsNew('MaterialID', $arrayIds)) {
-            $result = dbQuery('\samson\cms\CMSMaterial')
+            $foundedIds = dbQuery('\samson\cms\CMSMaterial')
                 ->cond('MaterialID', $arrayIds)
                 ->join('gallery');
 
             if (isset($this->structures)) {
-                $result->join('\samson\cms\CMSNavMaterial')->cond('structurematerial_StructureID', $this->structures);
+                $foundedIds->join('\samson\cms\CMSNavMaterial')->cond('structurematerial_StructureID', $this->structures);
             }
         } else { // Create 100% empty condition
-            $result->cond('MaterialID', 0);
+            $foundedIds->cond('MaterialID', 0);
         }
 
-        // Call external material handler
-        if (isset($this->MaterialExternalHandler)) {
-            $result->handler($this->MaterialExternalHandler);
+        $foundedIds = $foundedIds->fieldsNew('MaterialID');
+
+        if (sizeof($foundedIds)) {
+            $result = dbQuery('material')->id($foundedIds);
+
+            // Clone for count query
+            $materialsCount = clone $result;
+
+            // Create pager
+            $this->pager = new \samson\pager\Pager($page, $this->itemsOnPage, $this->pagerPrefix, null, $this->getParams);
+            $this->pager->update($materialsCount->count());
+            $result->limit($this->pager->start, $this->pager->end);
+
+            $response = dbQuery('\samson\cms\CMSMaterial')->id($result->fieldsNew('MaterialID'));
+
+            // Call external material handler
+            if (isset($this->MaterialExternalHandler)) {
+                $response->handler($this->MaterialExternalHandler);
+            }
+
+            // Return query result
+            return $response->join('gallery')->exec();
+        } else {
+            return array();
         }
-
-        // Clone for count query
-        $materialsCount = clone $result;
-
-        // Create pager
-        $this->pager = new \samson\pager\Pager($page, $this->itemsOnPage, $this->pagerPrefix, null, $this->getParams);
-        $this->pager->update($materialsCount->count());
-        $result->limit($this->pager->start, $this->pager->end);
-
-        // Return query result
-        return $result->exec();
     }
 }
