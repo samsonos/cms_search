@@ -101,7 +101,6 @@ class CMSSearch {
             ->cond($conditionOR)
             ->cond('FieldID', $this->searchFields)
             ->cond('Active', 1)
-            ->cond('locale', array('', SamsonLocale::current()))
             ->join('material')
             ->cond('material.Active', 1)
             ->cond('material.Published', 1)
